@@ -1,0 +1,588 @@
+/* ==========================================================================
+   HP TERRAPLENAGEM - DASHBOARD EXECUTIVO (VERSÃO 2.0 / PORTFÓLIO)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Paleta Premium baseada em Tailwind Colors */
+  --primary: #f59e0b; /* Amber 500 - Mais elegante que o amarelo puro */
+  --primary-hover: #d97706; /* Amber 600 */
+  --primary-light: #fef3c7;
+  
+  --dark-bg: #0f172a; /* Slate 900 - Um azul noturno muito sofisticado */
+  --dark-hover: #1e293b; /* Slate 800 */
+  
+  --bg-body: #f8fafc; /* Slate 50 - Fundo super limpo e moderno */
+  --surface: #ffffff;
+  
+  --text-main: #475569; /* Slate 500 */
+  --text-dark: #0f172a; /* Slate 900 */
+  
+  --border: #e2e8f0; /* Slate 200 */
+  
+  /* Arredondamentos mais amigáveis e modernos */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  
+  /* Sombras executivas (difusas) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-float: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* RESET E BASE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 30px 20px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* CARTÃO PRINCIPAL & CONTAINERS */
+.container {
+  background-color: var(--surface);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 30px auto;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Detalhe visual sutil no topo do card ao invés de borda dura */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary), #fbbf24);
+}
+
+.dashboard-container {
+  max-width: 1250px !important;
+  padding: 45px !important;
+}
+
+.max-w-800 {
+  max-width: 800px !important;
+}
+
+/* LOGO E TÍTULOS */
+.logo-login {
+  display: block;
+  max-width: 140px;
+  height: auto;
+  margin: 0 auto 30px auto;
+}
+
+h2, h3 {
+  text-align: center;
+  color: var(--text-dark);
+  margin-bottom: 25px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.25rem; }
+
+/* FORMULÁRIOS E INPUTS */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="file"],
+select,
+.input-select {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  background-color: var(--bg-body);
+  color: var(--text-dark);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+}
+
+/* Efeito focus refinado */
+input:focus, select:focus, .input-select:focus {
+  border-color: var(--primary);
+  background-color: var(--surface);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15); 
+}
+
+/* BOTÕES - MODERNIZAÇÃO */
+button, .btn-login, .btn-salvar, .btn-excel, .btn-admin, .btn-filtrar, 
+.btn-sair, .link-voltar, .btn-editar, .btn-manutencao, .btn-ia {
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  border: none;
+  padding: 14px 24px;
+}
+
+button[type="submit"], button[type="button"]:not(.btn-ia, .btn-editar, .btn-excel, .btn-manutencao) {
+  width: 100%;
+}
+
+button:active, a[class^="btn-"]:active {
+  transform: scale(0.98) !important;
+}
+
+/* 1. Botões Primários */
+.btn-login, .btn-salvar, .btn-fechamento {
+  background: linear-gradient(135deg, var(--primary), #fbbf24);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+.btn-login:hover, .btn-salvar:hover, .btn-fechamento:hover {
+  background: linear-gradient(135deg, var(--primary-hover), var(--primary));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
+}
+
+/* 2. Botões Secundários (Ações e Exportação) */
+.btn-excel, .btn-admin, .btn-filtrar, .btn-manutencao {
+  background-color: var(--dark-bg);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn-excel:hover, .btn-admin:hover, .btn-filtrar:hover, .btn-manutencao:hover {
+  background-color: var(--dark-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 3. Botões Discretos (Voltar/Sair) */
+.btn-sair, .link-voltar {
+  background-color: #f1f5f9;
+  color: #64748b;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.btn-sair:hover, .link-voltar:hover {
+  background-color: #e2e8f0;
+  color: var(--text-dark);
+}
+
+/* 4. Botão Menor (Tabelas) */
+.btn-editar {
+  background-color: #3b82f6;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+.btn-editar:hover {
+  background-color: #2563eb;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+/* 5. Botão IA Premium */
+.btn-ia {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: #fff;
+  padding: 12px 20px;
+}
+.btn-ia:hover {
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+}
+
+/* MENSAGENS E ALERTAS */
+.mensagem {
+  padding: 16px;
+  margin-bottom: 25px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-weight: 600;
+  border-left: 4px solid;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+.sucesso { background-color: #f0fdf4; color: #15803d; border-color: #22c55e; }
+.erro { background-color: #fef2f2; color: #b91c1c; border-color: #ef4444; }
+.alerta { background-color: #fffbeb; color: #b45309; border-color: #f59e0b; }
+
+/* PAINEL GERENCIAL E COMPONENTES */
+.header-painel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+.admin-area {
+  margin-top: 30px;
+  padding: 40px;
+  background-color: var(--dark-bg);
+  color: #fff;
+  margin-left: -45px;
+  margin-right: -45px;
+  margin-bottom: -45px;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+#servico {
+  margin: 15px auto 30px auto;
+  width: 100%;
+  max-width: 380px;
+  background: linear-gradient(135deg, var(--dark-bg), var(--dark-hover));
+  border-radius: var(--radius-md);
+  text-align: center;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+}
+#servico h3 { color: var(--primary); margin-bottom: 15px; font-size: 1rem; }
+#servico p { color: #cbd5e1; font-size: 0.9rem; margin-bottom: 8px;}
+#servico span { color: #fff; font-weight: 700; display: block; font-size: 1.15rem; }
+
+/* IA BOX & FEEDBACK */
+.ia-box {
+  background: #f8fafc;
+  padding: 25px;
+  border-radius: var(--radius-md);
+  margin-bottom: 30px;
+  border: 1px solid var(--border);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+.ia-input-group { display: flex; gap: 15px; margin-top: 12px; }
+.ia-input-group input { margin-bottom: 0; flex: 1; }
+
+.ia-feedback-card {
+  background: linear-gradient(to right, #f0f9ff, #ffffff);
+  border-left: 4px solid #0ea5e9;
+  padding: 20px;
+  margin: 25px 0;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  color: #334155;
+}
+
+/* ÁREA DE FILTROS */
+.search-form {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  background: #fff;
+  padding: 25px;
+  border-radius: var(--radius-md);
+  align-items: flex-end;
+  flex-wrap: wrap;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.search-form .form-group { margin-bottom: 0; flex: 1; min-width: 180px; }
+.flex-expand { flex: 2 !important; min-width: 220px !important; }
+.search-form input, .search-form select { margin-bottom: 0; }
+
+/* CARDS DE RESUMO EXECUTIVO */
+.summary-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: var(--surface);
+  padding: 30px 20px;
+  border-radius: var(--radius-md);
+  flex: 1;
+  min-width: 240px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
+}
+.card-combustivel::after { background: #ef4444; }
+.card-manutencao::after { background: #3b82f6; }
+.card-total::after { background: #10b981; }
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-float);
+}
+
+.card h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card .value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text-dark);
+}
+
+/* TABELAS MODERNAS */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  background-color: #f8fafc;
+  color: var(--text-main);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: #f1f5f9; }
+
+/* BADGES ESTILO PILL */
+.badge {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+.badge-combustivel { background: #fee2e2; color: #b91c1c; }
+.badge-equipamento, .badge-manutencao { background: #e0f2fe; color: #0369a1; }
+.badge-ok { background-color: #d1fae5; color: #047857; }
+.badge-atencao { background-color: #fef3c7; color: #b45309; }
+.badge-critico { background-color: #fee2e2; color: #b91c1c; }
+
+.divisor {
+  border: 0; border-top: 1px solid var(--border); margin: 40px 0;
+}
+.text-center { text-align: center; }
+
+/* MODAL GLASSMORPHISM */
+.modal-baixa { 
+  display: none; 
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(15, 23, 42, 0.4); 
+  backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; z-index: 1000; 
+}
+.modal-content { 
+  background: var(--surface); 
+  padding: 35px; 
+  border-radius: var(--radius-lg); 
+  max-width: 480px; width: 90%; 
+  box-shadow: var(--shadow-float);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* WIDGET CHAT GLASSMORPHISM */
+.chat-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
+
+.chat-btn {
+  width: 65px !important; height: 65px !important;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--dark-bg), var(--dark-hover));
+  color: var(--primary);
+  border: none;
+  font-size: 28px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.chat-btn:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.chat-window {
+  display: none; position: absolute; bottom: 90px; right: 0;
+  width: 400px; max-width: calc(100vw - 40px); height: 550px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+  border: 1px solid rgba(255,255,255,0.5);
+  flex-direction: column; overflow: hidden;
+}
+
+.chat-window.open { display: flex !important; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.chat-header {
+  background: var(--dark-bg);
+  color: #fff;
+  padding: 18px 25px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chat-header span { font-weight: 700; font-size: 0.95rem; }
+.chat-header .close-btn {
+  width: 35px !important; height: 35px !important;
+  background: rgba(255,255,255,0.1) !important;
+  color: #fff; border-radius: 50%; font-size: 20px !important;
+}
+.chat-header .close-btn:hover { background: rgba(255,255,255,0.2) !important; }
+
+.chat-messages {
+  flex: 1; padding: 25px; overflow-y: auto;
+  background-color: transparent;
+  display: flex; flex-direction: column; gap: 15px;
+}
+
+.msg {
+  max-width: 85%; padding: 14px 18px; border-radius: 16px;
+  font-size: 0.95rem; line-height: 1.5; box-shadow: var(--shadow-sm);
+}
+.msg-bot {
+  align-self: flex-start; background: #fff; color: var(--text-main);
+  border: 1px solid var(--border); border-bottom-left-radius: 4px;
+}
+.msg-bot strong { color: var(--dark-bg); }
+.msg-user {
+  align-self: flex-end; background: var(--primary); color: #fff;
+  font-weight: 500; border-bottom-right-radius: 4px;
+}
+
+.chat-input {
+  padding: 20px; background: rgba(255,255,255,0.8);
+  border-top: 1px solid var(--border);
+  display: flex !important; gap: 12px !important; align-items: stretch !important;
+}
+.chat-input input {
+  flex: 1 1 auto !important; margin-bottom: 0 !important;
+  border-radius: var(--radius-md) !important;
+}
+.chat-input button {
+  flex: 0 0 110px !important; width: 110px !important;
+  border-radius: var(--radius-md) !important; margin: 0 !important;
+}
+
+/* 1. Recria a caixa branca do alerta de manutenção */
+.card-alertas { 
+  background: var(--surface); 
+  border-radius: var(--radius-md); 
+  padding: 25px; 
+  margin-bottom: 25px; 
+  box-shadow: var(--shadow-sm); 
+  border: 1px solid var(--border);
+}
+
+/* 2. Força os links da área admin a quebrarem linha */
+.admin-area a {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+}
+
+/* 3. Descamufla os botões escuros e define 100% de largura */
+.admin-area button {
+  width: 100% !important;
+  margin-bottom: 15px !important;
+}
+
+.admin-area button.btn-excel {
+  background-color: var(--dark-hover); /* Um azul um pouco mais claro que o fundo */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}
+
+.admin-area button.btn-excel:hover {
+  background-color: #334155; /* Destaca ao passar o mouse */
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-manutencao {
+  width: 100% !important;
+}
+
+/* RESPONSIVIDADE ESTRUTURADA */
+@media (max-width: 768px) {
+  body { padding: 15px; }
+  .container, .dashboard-container { padding: 25px !important; border-radius: var(--radius-md); }
+  .admin-area {
+    margin-left: -25px; margin-right: -25px; margin-bottom: -25px;
+    padding: 30px 25px;
+  }
+  .search-form { flex-direction: column; padding: 20px !important; gap: 15px !important; }
+  .search-form .form-group { width: 100%; }
+  
+  /* Tabelas transformadas em Cards no Mobile */
+  table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
+  thead tr { display: none; }
+  tr {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius-md); margin-bottom: 20px; box-shadow: var(--shadow-sm);
+    padding: 10px;
+  }
+  td {
+    position: relative; padding: 12px 10px 12px 45% !important;
+    text-align: right !important; border-bottom: 1px solid #f8fafc;
+  }
+  td:last-child { border-bottom: none; text-align: center !important; padding: 15px !important; }
+  td::before {
+    content: attr(data-label); position: absolute; left: 15px; width: 40%;
+    text-align: left; font-weight: 600; color: var(--text-main);
+    text-transform: uppercase; font-size: 0.7rem;
+  }
+  .tabela-horas td { text-align: center !important; padding: 12px !important; }
+  .tabela-horas td::before { display: none !important; }
+}

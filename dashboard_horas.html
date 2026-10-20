@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Horas - HP Terraplenagem</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f59e0b">
+    <style>
+        /* Classe local para deixar o painel menor e mais compacto */
+        .dashboard-compacto { max-width: 950px !important; }
+        .card-compacto { padding: 1.5rem !important; min-width: 100% !important; }
+        .card-compacto .value { font-size: 2rem !important; }
+    </style>
+</head>
+<body>
+    <div class="container dashboard-container dashboard-compacto">
+        <div class="header-painel">
+            <h2>Gerenciamento de Horas</h2>
+            <a href="painel.html" class="btn-sair">Voltar ao Painel</a>
+        </div>
+
+        <form id="form-filtros" class="search-form" style="align-items: flex-end;">
+            <div class="form-group" style="min-width: 80px;">
+                <label for="mes">Mês</label>
+                <select id="mes" name="mes" class="input-select" style="margin-bottom: 0;">
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10" selected>10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="min-width: 90px;">
+                <label for="ano">Ano</label>
+                <input type="number" id="ano" name="ano" value="2026" required style="margin-bottom: 0;">
+            </div>
+
+            <div class="form-group" style="min-width: 170px;">
+                <label for="maquina_filtro">Máquina / Veículo</label>
+                <select id="maquina_filtro" name="maquina_filtro" class="input-select" style="margin-bottom: 0;">
+                    <option value="">Todas as Máquinas</option>
+                    <option value="Retroescavadeira">Retroescavadeira</option>
+                    <option value="Escavadeira">Escavadeira</option>
+                    <option value="Pá Carregadeira Liugong">Pá Carregadeira Liugong</option>
+                    <option value="Caminhão Caçamba">Caminhão Caçamba</option>
+                </select>
+            </div>
+
+            <div class="form-group flex-expand">
+                <label for="busca">Buscar</label>
+                <input type="text" id="busca" name="busca" placeholder="Cliente ou operador..." style="margin-bottom: 0;">
+            </div>
+            
+            <button type="submit" class="btn-filtrar" style="height: 47px;">Filtrar</button>
+        </form>
+
+        <div class="summary-cards">
+            <div class="card card-total card-compacto">
+                <h3 style="margin-bottom: 5px;">Total de Horas no Período</h3>
+                <div id="total-horas" class="value">0,00h</div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="tabela-horas">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Operador</th>
+                        <th>Máquina</th>
+                        <th>Serviço / Cliente</th>
+                        <th>Total (Horas)</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo">
+                    <!-- Registros injetados via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+    // 1. Verificação de Segurança
+    if (!sessionStorage.getItem('id_usuario') || sessionStorage.getItem('tipo_usuario') !== 'admin') {
+        window.location.href = 'index.html'; // Bloqueia quem não for admin
+    }
+
+    // 2. Banco de Dados Fictício (MOCK DATA)
+    const registrosBanco = [
+        { data: '2026-10-15T08:30', operador: 'Henrique Operador', maquina: 'Retroescavadeira', servico: 'Limpeza de terreno SAAE', total: 6.5 },
+        { data: '2026-10-18T13:00', operador: 'Carlos Silva', maquina: 'Pá Carregadeira Liugong', servico: 'Carregamento de brita', total: 4.0 },
+        { data: '2026-10-20T07:00', operador: 'Henrique Operador', maquina: 'Caminhão Caçamba', servico: 'Frete de areia Centro', total: 8.5 },
+        { data: '2026-09-25T09:00', operador: 'Marcos Almeida', maquina: 'Escavadeira', servico: 'Abertura de vala', total: 10.0 }
+    ];
+
+    // 3. Função de Renderização e Filtro
+    function renderizarTabela() {
+        const mesFiltro = document.getElementById('mes').value;
+        const anoFiltro = document.getElementById('ano').value;
+        const maqFiltro = document.getElementById('maquina_filtro').value;
+        const buscaFiltro = document.getElementById('busca').value.toLowerCase();
+        
+        const tbody = document.getElementById('tabela-corpo');
+        tbody.innerHTML = '';
+        let totalHoras = 0;
+        let achouRegistros = false;
+
+        registrosBanco.forEach(reg => {
+            // Extrai Mês e Ano do formato ISO da data simulada
+            const dataObj = new Date(reg.data);
+            const regMes = String(dataObj.getMonth() + 1).padStart(2, '0');
+            const regAno = String(dataObj.getFullYear());
+
+            // Regras de filtragem
+            const passaMesAno = (regMes === mesFiltro && regAno === anoFiltro);
+            const passaMaquina = maqFiltro === "" || reg.maquina === maqFiltro;
+            const passaBusca = buscaFiltro === "" || 
+                               reg.operador.toLowerCase().includes(buscaFiltro) || 
+                               reg.servico.toLowerCase().includes(buscaFiltro) || 
+                               reg.maquina.toLowerCase().includes(buscaFiltro);
+
+            if (passaMesAno && passaMaquina && passaBusca) {
+                achouRegistros = true;
+                totalHoras += reg.total;
+
+                // Formatação visual da data
+                const dataFormatada = `${String(dataObj.getDate()).padStart(2, '0')}/${regMes}/${regAno} ${String(dataObj.getHours()).padStart(2,'0')}:${String(dataObj.getMinutes()).padStart(2,'0')}`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${dataFormatada}</td>
+                    <td>${reg.operador}</td>
+                    <td>${reg.maquina}</td>
+                    <td>${reg.servico}</td>
+                    <td><strong>${reg.total.toFixed(2).replace('.', ',')}h</strong></td>
+                `;
+                tbody.appendChild(tr);
+            }
+        });
+
+        if (!achouRegistros) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum registro encontrado neste período.</td></tr>`;
+        }
+
+        // Atualiza o Card Total
+        document.getElementById('total-horas').textContent = `${totalHoras.toFixed(2).replace('.', ',')}h`;
+    }
+
+    // 4. Aciona a busca quando o formulário é enviado
+    document.getElementById('form-filtros').addEventListener('submit', function(e) {
+        e.preventDefault();
+        renderizarTabela();
+    });
+
+    // Renderiza a primeira vez ao carregar a página
+    renderizarTabela();
+
+</script>
+</body>
+</html>

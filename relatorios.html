@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios - HP Terraplenagem</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<div class="container dashboard-container"> 
+    <div class="header-painel">
+        <h2>Relatório de Produção</h2>
+        <a href="painel.html" class="btn-sair">Voltar</a>
+    </div>
+
+    <form id="form-pesquisa" class="search-form">
+        <div class="form-group">
+            <label>De:</label>
+            <input type="date" id="inicio" name="inicio" style="padding: 10px;">
+        </div>
+        
+        <div class="form-group">
+            <label>Até:</label>
+            <input type="date" id="fim" name="fim" style="padding: 10px;">
+        </div>
+
+        <div class="form-group" style="flex: 2;">
+            <label>Buscar</label>
+            <input type="text" id="Pesquisar" name="Pesquisar" placeholder="Operador, máquina ou serviço..." style="padding: 10px;">
+        </div>
+
+        <button type="submit" class="btn-login" style="width: auto; padding: 10px 20px; height: 42px;">Buscar</button>
+    </form>
+
+    <div style="text-align: right; margin-bottom: 10px;">
+        <button type="button" id="btn-exportar" class="btn-excel" style="width: auto;">📥 Baixar CSV Filtrado</button>
+    </div>
+
+    <div style="width: 100%; overflow-x: auto; background: white; border-radius: 8px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Operador</th>
+                    <th>Máquina</th>
+                    <th>Serviço</th>
+                    <th>H.Incial</th>
+                    <th>H.Final</th>
+                    <th>Total Horas</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-relatorios">
+                <!-- Conteúdo gerado via JS -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    // 1. Segurança (Mock)
+    if (!sessionStorage.getItem('id_usuario') || sessionStorage.getItem('tipo_usuario') !== 'admin') {
+        window.location.href = 'index.html';
+    }
+
+    // 2. Banco de Dados Simulado
+    const relatoriosBanco = [
+        { data: '2026-10-15', operador: 'Henrique Operador', maquina: 'Retroescavadeira', servico: 'Limpeza de terreno SAAE', h_inicial: 1000.50, h_final: 1007.00, total: 6.5 },
+        { data: '2026-10-18', operador: 'Carlos Silva', maquina: 'Pá Carregadeira Liugong', servico: 'Carregamento de brita', h_inicial: 2500.00, h_final: 2504.00, total: 4.0 },
+        { data: '2026-10-20', operador: 'Henrique Operador', maquina: 'Caminhão Caçamba', servico: 'Frete de areia Centro', h_inicial: 5010.00, h_final: 5018.50, total: 8.5 },
+        { data: '2026-09-25', operador: 'Marcos Almeida', maquina: 'Escavadeira', servico: 'Abertura de vala', h_inicial: 1200.00, h_final: 1210.00, total: 10.0 },
+        { data: '2026-09-28', operador: 'Henrique Operador', maquina: 'Caminhão Prancha', servico: 'Transporte de maquinário', h_inicial: 340.00, h_final: 345.50, total: 5.5 }
+    ];
+
+    let dadosFiltrados = [...relatoriosBanco]; // Guarda a pesquisa atual para a exportação
+
+    // 3. Função de Renderização
+    function renderizarRelatorios() {
+        const inicio = document.getElementById('inicio').value;
+        const fim = document.getElementById('fim').value;
+        const pesquisa = document.getElementById('Pesquisar').value.toLowerCase();
+        
+        const tbody = document.getElementById('tabela-relatorios');
+        tbody.innerHTML = '';
+        dadosFiltrados = [];
+
+        relatoriosBanco.forEach(reg => {
+            let passaData = true;
+            if (inicio && fim) {
+                passaData = (reg.data >= inicio && reg.data <= fim);
+            } else if (inicio) {
+                passaData = (reg.data >= inicio);
+            } else if (fim) {
+                passaData = (reg.data <= fim);
+            }
+
+            const passaBusca = pesquisa === "" || 
+                               reg.operador.toLowerCase().includes(pesquisa) || 
+                               reg.maquina.toLowerCase().includes(pesquisa) || 
+                               reg.servico.toLowerCase().includes(pesquisa);
+
+            if (passaData && passaBusca) {
+                dadosFiltrados.push(reg);
+                
+                // Formatação da Data de YYYY-MM-DD para DD/MM/YYYY
+                const [ano, mes, dia] = reg.data.split('-');
+                const dataBR = `${dia}/${mes}/${ano}`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${dataBR}</td>
+                        <td>${reg.operador}</td>
+                        <td>${reg.maquina}</td>
+                        <td>${reg.servico}</td>
+                        <td>${reg.h_inicial.toFixed(2).replace('.', ',')}</td>
+                        <td>${reg.h_final.toFixed(2).replace('.', ',')}</td>
+                        <td><strong>${reg.total.toFixed(2).replace('.', ',')}</strong></td>
+                    </tr>
+                `;
+            }
+        });
+
+        if (dadosFiltrados.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef4444; font-weight: bold;">Nenhum registro encontrado neste período.</td></tr>`;
+        }
+    }
+
+    // Lida com o botão de buscar
+    document.getElementById('form-pesquisa').addEventListener('submit', function(e) {
+        e.preventDefault();
+        renderizarRelatorios();
+    });
+
+    // 4. Exportação CSV via JavaScript (Substitui o exportar.php)
+    document.getElementById('btn-exportar').addEventListener('click', function() {
+        if (dadosFiltrados.length === 0) {
+            alert("Não há dados para exportar com os filtros atuais.");
+            return;
+        }
+
+        // BOM (Byte Order Mark) para forçar o Excel a ler acentos em UTF-8
+        let csvContent = "\uFEFF"; 
+        csvContent += "Data;Operador;Máquina;Serviço;H. Inicial;H. Final;Total Horas\r\n";
+
+        dadosFiltrados.forEach(reg => {
+            const [ano, mes, dia] = reg.data.split('-');
+            const dataBR = `${dia}/${mes}/${ano}`;
+            
+            // Monta a linha substituindo ponto por vírgula para o Excel entender os decimais
+            let row = [
+                dataBR,
+                reg.operador,
+                reg.maquina,
+                reg.servico,
+                reg.h_inicial.toFixed(2).replace('.', ','),
+                reg.h_final.toFixed(2).replace('.', ','),
+                reg.total.toFixed(2).replace('.', ',')
+            ];
+            
+            csvContent += row.join(";") + "\r\n";
+        });
+
+        // Criação de um link temporário para forçar o download do arquivo
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "relatorio_hp_horas_demo.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // Carrega a tabela assim que abre a página
+    renderizarRelatorios();
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(console.error);
+    }
+    <script src="chat.js"></script>
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentos - HP Terraplenagem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container dashboard-container max-w-800">
+        <div class="header-painel">
+            <h2>Documentos</h2>
+            <a href="painel.html" class="btn-sair">Voltar ao Painel</a>
+        </div>
+
+        <div id="mensagem-sistema" style="display: none;" class="mensagem"></div>
+
+        <div class="table-responsive" style="background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Máquina / Veículo</th>
+                        <th>Placa</th>
+                        <th>RENAVAM</th>
+                        <th>Documento (CRLV)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-documentos">
+                    <!-- Gerado via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Documentos -->
+    <div id="modalDoc" class="modal-baixa">
+        <div class="modal-content">
+            <h3>Atualizar Documentação</h3>
+            <form id="form-documento">
+                <input type="hidden" id="modal_doc_id">
+                
+                <div class="form-group">
+                    <label>Veículo:</label>
+                    <input type="text" id="modal_doc_nome" readonly style="background-color: #f1f5f9;">
+                </div>
+
+                <div class="form-group">
+                    <label>Placa:</label>
+                    <input type="text" id="modal_doc_placa" placeholder="Ex: ABC-1234">
+                </div>
+
+                <div class="form-group">
+                    <label>RENAVAM:</label>
+                    <input type="number" id="modal_doc_renavam" placeholder="Apenas números">
+                </div>
+
+                <div class="form-group">
+                    <label>Anexar CRLV (PDF ou Imagem):</label>
+                    <input type="file" id="arquivo_doc" accept=".pdf, .jpg, .jpeg, .png" style="width: 100%; padding: 10px; border: 1.5px dashed #cbd5e1; border-radius: 6px; background: #f8fafc;">
+                    <small style="color: #64748b; font-size: 11px;">*Na demonstração, o upload é apenas simulado visualmente.</small>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-salvar">Salvar Dados</button>
+                    <button type="button" onclick="fecharModalDoc()" class="btn-sair" style="background:#64748b;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    // 1. Segurança mockada
+    if (!sessionStorage.getItem('id_usuario') || sessionStorage.getItem('tipo_usuario') !== 'admin') {
+        window.location.href = 'index.html';
+    }
+
+    // 2. Banco de Dados Simulado da Frota e Documentos
+    let frotaDocumentos = [
+        { id: 1, nome: 'Retroescavadeira JCB', placa: '', renavam: '', tem_doc: false },
+        { id: 2, nome: 'Pá Carregadeira Liugong', placa: '', renavam: '', tem_doc: false },
+        { id: 3, nome: 'Caminhão Caçamba VW', placa: 'RTY-9988', renavam: '12345678901', tem_doc: true },
+        { id: 4, nome: 'Carro L200', placa: 'ABC-1234', renavam: '98765432109', tem_doc: true }
+    ];
+
+    // 3. Renderizar Tabela
+    function renderizarDocumentos() {
+        const tbody = document.getElementById('tabela-documentos');
+        tbody.innerHTML = '';
+
+        frotaDocumentos.forEach(veiculo => {
+            const placaTexto = veiculo.placa ? veiculo.placa : '<span style="color:#94a3b8;">Não informado</span>';
+            const renavamTexto = veiculo.renavam ? veiculo.renavam : '<span style="color:#94a3b8;">Não informado</span>';
+            
+            let docHtml = '';
+            if (veiculo.tem_doc) {
+                docHtml = `<button onclick="alert('Visualização do PDF simulada na Demo!')" class="btn-editar" style="background-color: #10b981; border-color: #10b981;">Abrir Arquivo</button>`;
+            } else {
+                docHtml = `<span style="color:#ef4444; font-size: 12px; font-weight: bold;">Pendente</span>`;
+            }
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${veiculo.nome}</strong></td>
+                    <td>${placaTexto}</td>
+                    <td>${renavamTexto}</td>
+                    <td>${docHtml}</td>
+                    <td>
+                        <button type="button" class="btn-editar" onclick="abrirModalDoc(${veiculo.id})">Editar</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // 4. Lógica do Modal
+    function abrirModalDoc(id) {
+        const veiculo = frotaDocumentos.find(v => v.id === id);
+        if (veiculo) {
+            document.getElementById('modal_doc_id').value = veiculo.id;
+            document.getElementById('modal_doc_nome').value = veiculo.nome;
+            document.getElementById('modal_doc_placa').value = veiculo.placa;
+            document.getElementById('modal_doc_renavam').value = veiculo.renavam;
+            document.getElementById('arquivo_doc').value = ''; // Limpa o input file
+            document.getElementById('modalDoc').style.display = 'flex';
+        }
+    }
+
+    function fecharModalDoc() {
+        document.getElementById('modalDoc').style.display = 'none';
+    }
+
+    // 5. Simular Salvar Dados (Update)
+    document.getElementById('form-documento').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const id = parseInt(document.getElementById('modal_doc_id').value);
+        const placa = document.getElementById('modal_doc_placa').value.toUpperCase();
+        const renavam = document.getElementById('modal_doc_renavam').value;
+        const arquivoInput = document.getElementById('arquivo_doc');
+
+        const index = frotaDocumentos.findIndex(v => v.id === id);
+        
+        if (index !== -1) {
+            frotaDocumentos[index].placa = placa;
+            frotaDocumentos[index].renavam = renavam;
+            
+            // Se o usuário selecionou algum arquivo no computador, marcamos que tem documento
+            if (arquivoInput.files.length > 0) {
+                frotaDocumentos[index].tem_doc = true;
+            }
+        }
+
+        fecharModalDoc();
+        renderizarDocumentos();
+
+        // Feedback de sucesso
+        const msgBox = document.getElementById('mensagem-sistema');
+        msgBox.textContent = "Dados e documento atualizados com sucesso!";
+        msgBox.className = "mensagem sucesso";
+        msgBox.style.display = "block";
+        setTimeout(() => msgBox.style.display = 'none', 4000);
+    });
+
+    // Inicia
+    renderizarDocumentos();
+
+</script>
+</body>
+</html>

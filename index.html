@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Login - HP Terraplenagem</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <div class="container">
+        <img src="media/logo.png" alt="HP Terraplenagem" class="logo-login">
+        <h2>Acesso do Operador</h2>
+        
+        <div id="mensagem-erro" style="display: none;" class="mensagem erro"></div>
+
+        <form id="form-login">
+            <label>Login:</label>
+            <input type="text" id="login" name="login" placeholder="Digite seu usuário (ex: admin ou operador)" required>
+
+            <label>Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Digite sua senha (ex: admin ou operador)" required>
+
+            <!-- CHECKBOX LEMBRAR-ME -->
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 25px;">
+                <input type="checkbox" name="lembrar" id="lembrar" style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
+                <label for="lembrar" style="margin: 0; font-size: 14px; font-weight: 600; color: #4b5563; cursor: pointer;">
+                    Lembrar meu acesso
+                </label>
+            </div>
+
+            <button type="submit" class="btn-login">Entrar no Sistema</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
+            <strong>Modo Demo:</strong> Use <em>admin/admin</em> ou <em>operador/operador</em>.
+        </p>
+    </div>
+
+<script>
+    // Se o usuário já estiver "logado" na demo, manda direto pro painel
+    if (sessionStorage.getItem('id_usuario')) {
+        window.location.href = 'painel.html';
+    }
+
+    document.getElementById('form-login').addEventListener('submit', function(e) {
+        e.preventDefault(); // Impede o recarregamento da página
+        
+        const login = document.getElementById('login').value.trim().toLowerCase();
+        const senha = document.getElementById('senha').value.trim();
+        const msgErro = document.getElementById('mensagem-erro');
+
+        // Simulação de banco de dados para a demonstração
+        if (login === 'admin' && senha === 'admin') {
+            sessionStorage.setItem('id_usuario', '1');
+            sessionStorage.setItem('nome_usuario', 'Administrador');
+            sessionStorage.setItem('tipo_usuario', 'admin');
+            window.location.href = 'painel.html';
+        } else if (login === 'operador' && senha === 'operador') {
+            sessionStorage.setItem('id_usuario', '2');
+            sessionStorage.setItem('nome_usuario', 'Henrique Operador');
+            sessionStorage.setItem('tipo_usuario', 'operador');
+            window.location.href = 'painel.html';
+        } else {
+            msgErro.textContent = "Credenciais incorretas. Para a demo, use admin/admin ou operador/operador.";
+            msgErro.style.display = "block";
+        }
+    });
+
+    if ('serviceWorker' in navigator){
+        navigator.serviceWorker.register('sw.js')
+        .then(()=> console.log("Service Worker registrado."))
+        .catch(err => console.log("Erro ao registrar.", err))
+    }
+</script>
+</body>
+</html>
