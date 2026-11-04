@@ -1,0 +1,7 @@
+# Impede que arquivos enviados sejam executados como PHP
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<FilesMatch "\.(php|phtml|phar)$">
+    Require all denied
+</FilesMatch>
