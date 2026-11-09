@@ -31,23 +31,10 @@ $registros = $stmt->fetchAll();
 
 $total_horas = array_sum(array_column($registros, 'total_horas'));
 $maquinas = $pdo->query('SELECT id, nome FROM maquinas WHERE tem_horimetro = 1 ORDER BY nome')->fetchAll();
+
+$titulo = 'Dashboard de Horas';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Horas - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-    <meta name="theme-color" content="#f59e0b">
-    <style>
-        .dashboard-compacto { max-width: 950px !important; }
-        .card-compacto { padding: 1.5rem !important; min-width: 100% !important; }
-        .card-compacto .value { font-size: 2rem !important; }
-    </style>
-</head>
-<body>
     <div class="container dashboard-container dashboard-compacto">
         <div class="header-painel">
             <h2>Gerenciamento de Horas</h2>

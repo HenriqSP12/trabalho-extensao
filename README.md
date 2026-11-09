@@ -48,6 +48,7 @@ Se o seu MySQL tiver senha, altere a linha `DB_SENHA`.
 ```
 banco.sql             -> script do banco (importar no phpMyAdmin)
 config.php            -> conexão com o banco, sessão e funções auxiliares
+cabecalho.php         -> <head> comum incluído por todas as páginas
 index.php             -> login
 logout.php            -> sair
 painel.php            -> painel do admin / apontamento do operador
@@ -56,9 +57,10 @@ relatorios.php        -> relatório de produção + exportação CSV
 controle_gastos.php   -> despesas
 tela_manutencao.php   -> manutenção (troca de óleo)
 documentos.php        -> documentos dos veículos (upload do CRLV)
+arquivo.php           -> abre o CRLV (só para admin logado)
 fechamento.php        -> fechamento mensal
 cadastro.php          -> cadastro de usuários
-uploads/              -> arquivos de CRLV enviados
+uploads/              -> arquivos de CRLV enviados (acesso direto bloqueado)
 style.css, media/     -> visual e imagens
 ```
 

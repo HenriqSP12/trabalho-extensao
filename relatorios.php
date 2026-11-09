@@ -59,17 +59,10 @@ if (isset($_GET['exportar'])) {
 
 $total_horas = array_sum(array_column($registros, 'total_horas'));
 $link_csv = 'relatorios.php?' . http_build_query(['inicio' => $inicio, 'fim' => $fim, 'pesquisar' => $pesquisar, 'exportar' => 1]);
+
+$titulo = 'Relatórios';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-</head>
-<body>
 
 <div class="container dashboard-container">
     <div class="header-painel">
@@ -98,7 +91,7 @@ $link_csv = 'relatorios.php?' . http_build_query(['inicio' => $inicio, 'fim' => 
 
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
         <strong><?= count($registros) ?> registro(s) — <?= numero($total_horas) ?>h no total</strong>
-        <a href="<?= e($link_csv) ?>"><button type="button" class="btn-excel" style="width: auto;">📥 Baixar CSV Filtrado</button></a>
+        <a href="<?= e($link_csv) ?>" class="btn-excel">📥 Baixar CSV Filtrado</a>
     </div>
 
     <div style="width: 100%; overflow-x: auto; background: white; border-radius: 8px;">

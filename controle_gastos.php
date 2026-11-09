@@ -18,7 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $maquina_id = (int) ($_POST['maquina_id'] ?? 0);
     $valor      = converter_moeda($_POST['gasto'] ?? '');
     $tipo       = ($_POST['tipo_gasto'] ?? '') === 'equipamento' ? 'equipamento' : 'combustivel';
-    $data       = $_POST['data'] ?: date('Y-m-d');
+    $data       = $_POST['data'] ?? '';
+    if (!data_valida($data)) {
+        $data = date('Y-m-d'); // vazia ou inválida (ex.: 31/02): usa a data de hoje
+    }
     $descricao  = trim($_POST['descricao'] ?? '');
 
     if (!$maquina_id || $valor <= 0) {
@@ -83,18 +86,10 @@ foreach ($gastos as $g) {
 }
 
 $maquinas = $pdo->query('SELECT id, nome FROM maquinas ORDER BY nome')->fetchAll();
+
+$titulo = 'Controle de Despesas';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Despesas - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-    <meta name="theme-color" content="#f59e0b">
-</head>
-<body>
     <div class="container dashboard-container">
         <div class="header-painel">
             <h2>Gerenciamento de Despesas</h2>
@@ -107,6 +102,7 @@ $maquinas = $pdo->query('SELECT id, nome FROM maquinas ORDER BY nome')->fetchAll
             <h3><?= $editando ? 'Editar Gasto' : 'Lançar Novo Gasto' ?></h3>
 
             <form method="post" action="controle_gastos.php" autocomplete="off">
+                <?= campo_csrf() ?>
                 <input type="hidden" name="id" value="<?= $editando['id'] ?? '' ?>">
                 <div class="form-grid">
                     <div>
@@ -216,6 +212,7 @@ $maquinas = $pdo->query('SELECT id, nome FROM maquinas ORDER BY nome')->fetchAll
                             <td>
                                 <a href="controle_gastos.php?editar=<?= $g['id'] ?>" class="btn-editar">Editar</a>
                                 <form method="post" action="controle_gastos.php" style="display: inline;" onsubmit="return confirm('Excluir este gasto?');">
+                                    <?= campo_csrf() ?>
                                     <input type="hidden" name="acao" value="excluir">
                                     <input type="hidden" name="id" value="<?= $g['id'] ?>">
                                     <button type="submit" class="btn-editar" style="width: auto; background: #fee2e2; color: #b91c1c;">Excluir</button>

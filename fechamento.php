@@ -7,7 +7,7 @@ exigir_admin();
 // --------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['acao'] ?? '') === 'excluir') {
-        $pdo->prepare('DELETE FROM fechamentos WHERE id = ?')->execute([(int) $_POST['id']]);
+        $pdo->prepare('DELETE FROM fechamentos WHERE id = ?')->execute([(int) ($_POST['id'] ?? 0)]);
         definir_mensagem('Fechamento excluído. O período pode ser consolidado novamente.');
         redirecionar('fechamento.php');
     }
@@ -48,18 +48,10 @@ $historico = $pdo->query(
 )->fetchAll();
 
 $mes_atual = (int) date('n');
+
+$titulo = 'Fechamento Mensal';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fechamento Mensal - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-    <meta name="theme-color" content="#f59e0b">
-</head>
-<body>
     <div class="container dashboard-container">
         <div class="header-painel">
             <h2>Fechamento Mensal da Frota</h2>
@@ -74,6 +66,7 @@ $mes_atual = (int) date('n');
                 Soma todas as horas apontadas e todos os gastos lançados no mês escolhido e salva no histórico.
             </p>
             <form method="post" action="fechamento.php">
+                <?= campo_csrf() ?>
                 <div class="form-grid">
                     <div>
                         <label for="mes">Mês de Referência:</label>
@@ -118,6 +111,7 @@ $mes_atual = (int) date('n');
                             <td data-label="Fechado em"><?= data_br($f['criado_em'], true) ?></td>
                             <td>
                                 <form method="post" action="fechamento.php" onsubmit="return confirm('Excluir este fechamento?');">
+                                    <?= campo_csrf() ?>
                                     <input type="hidden" name="acao" value="excluir">
                                     <input type="hidden" name="id" value="<?= $f['id'] ?>">
                                     <button type="submit" class="btn-editar" style="width: auto; background: #fee2e2; color: #b91c1c;">Excluir</button>
