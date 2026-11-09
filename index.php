@@ -27,18 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $erro = 'Login ou senha incorretos.';
 }
+
+$titulo = 'Login';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title>Login - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-</head>
-<body>
 
     <div class="container">
         <img src="media/logo.png" alt="HP Terraplenagem" class="logo-login">
@@ -49,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="post" action="index.php">
+            <?= campo_csrf() ?>
             <label for="login">Login:</label>
             <input type="text" id="login" name="login" value="<?= e($login) ?>" placeholder="Digite seu usuário" required autofocus>
 

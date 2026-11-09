@@ -19,8 +19,13 @@ if (!$eh_admin && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$stmt->fetch() || $servico === '') {
         definir_mensagem('Preencha todos os campos corretamente.', 'erro');
-    } elseif ($h_final < $h_inicial) {
-        definir_mensagem('ERRO: Horímetro final não pode ser menor que o inicial!', 'erro');
+    } elseif ($h_inicial < 0 || $h_final <= $h_inicial) {
+        // Também barra valores negativos e apontamentos de 0 hora
+        // (texto inválido vira 0 no (float), então cai aqui também)
+        definir_mensagem('ERRO: Horímetro final deve ser maior que o inicial!', 'erro');
+    } elseif ($h_final > 99999999) {
+        // Limite da coluna DECIMAL(10,2) do banco
+        definir_mensagem('ERRO: Valor de horímetro muito alto.', 'erro');
     } else {
         $total = round($h_final - $h_inicial, 2);
 
@@ -66,19 +71,10 @@ if ($eh_admin) {
 }
 
 $primeiro_nome = explode(' ', $_SESSION['nome_usuario'])[0];
+
+$titulo = 'Painel';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title>Painel - HP Terraplenagem</title>
-    <meta name="theme-color" content="#f59e0b">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-</head>
-<body>
 
     <div class="container">
 
@@ -126,15 +122,15 @@ $primeiro_nome = explode(' ', $_SESSION['nome_usuario'])[0];
         </div>
 
         <div class="admin-area">
-            <a href="dashboard_horas.php"><button type="button" class="btn-excel">Gerenciamento de Horas</button></a>
-            <a href="controle_gastos.php"><button type="button" class="btn-excel">Controle de Gastos</button></a>
-            <a href="relatorios.php"><button type="button" class="btn-excel">Planilha de Relatórios</button></a>
-            <a href="documentos.php"><button type="button" class="btn-excel">Documentos de Veículos</button></a>
+            <a href="dashboard_horas.php" class="btn-excel">Gerenciamento de Horas</a>
+            <a href="controle_gastos.php" class="btn-excel">Controle de Gastos</a>
+            <a href="relatorios.php" class="btn-excel">Planilha de Relatórios</a>
+            <a href="documentos.php" class="btn-excel">Documentos de Veículos</a>
 
             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
 
-            <a href="fechamento.php"><button type="button" class="btn-fechamento">Fechamento Mensal</button></a>
-            <a href="cadastro.php"><button type="button" class="btn-login" style="margin-top: 10px;">Cadastrar Novo Usuário</button></a>
+            <a href="fechamento.php" class="btn-fechamento">Fechamento Mensal</a>
+            <a href="cadastro.php" class="btn-login" style="margin-top: 10px;">Cadastrar Novo Usuário</a>
         </div>
 
 <?php else: ?>
@@ -150,7 +146,8 @@ $primeiro_nome = explode(' ', $_SESSION['nome_usuario'])[0];
             <?php endif; ?>
         </div>
 
-        <form method="post" action="painel.php" autocomplete="off">
+        <form method="post" action="painel.php" autocomplete="off" id="form-apontamento">
+            <?= campo_csrf() ?>
             <div class="form-group">
                 <label for="maquina">Máquina:</label>
                 <select name="maquina_id" id="maquina" required class="input-select">
@@ -211,12 +208,12 @@ $primeiro_nome = explode(' ', $_SESSION['nome_usuario'])[0];
             });
 
             // Validação rápida antes de enviar
-            document.querySelector('form').addEventListener('submit', function (e) {
+            document.getElementById('form-apontamento').addEventListener('submit', function (e) {
                 const ini = parseFloat(document.getElementById('h_inicial').value);
                 const fim = parseFloat(document.getElementById('h_final').value);
-                if (fim < ini) {
+                if (fim <= ini) {
                     e.preventDefault();
-                    alert('O horímetro final não pode ser menor que o inicial!');
+                    alert('O horímetro final deve ser maior que o inicial!');
                 }
             });
         </script>

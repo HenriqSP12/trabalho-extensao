@@ -26,18 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $usuarios = $pdo->query('SELECT nome, login, tipo, criado_em FROM usuarios ORDER BY nome')->fetchAll();
+
+$titulo = 'Cadastrar Usuário';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Usuário - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-    <meta name="theme-color" content="#f59e0b">
-</head>
-<body>
     <div class="container form-card">
         <a href="painel.php" class="link-voltar">&larr; Voltar ao Painel</a>
 
@@ -46,6 +38,7 @@ $usuarios = $pdo->query('SELECT nome, login, tipo, criado_em FROM usuarios ORDER
         <?php mostrar_mensagem(); ?>
 
         <form method="post" action="cadastro.php" autocomplete="off">
+            <?= campo_csrf() ?>
             <div class="form-group">
                 <label for="nome">Nome Completo:</label>
                 <input type="text" id="nome" name="nome" placeholder="Ex: João da Silva" maxlength="100" required>

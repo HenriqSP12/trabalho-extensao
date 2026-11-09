@@ -1,7 +1,8 @@
-# Impede que arquivos enviados sejam executados como PHP
+# Bloqueia qualquer acesso direto aos arquivos enviados (CRLV).
+# Os documentos só podem ser abertos pelo arquivo.php, que exige login de administrador.
+Require all denied
+
+# Mesmo que o bloqueio acima seja desativado, nunca executa PHP aqui
 <IfModule mod_php.c>
     php_flag engine off
 </IfModule>
-<FilesMatch "\.(php|phtml|phar)$">
-    Require all denied
-</FilesMatch>
