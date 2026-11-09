@@ -10,6 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($nome === '' || $login === '' || $senha === '') {
         definir_mensagem('Preencha todos os campos.', 'erro');
+    } elseif (!preg_match('/^[a-z0-9._-]{3,50}$/', $login)) {
+        // Login simples evita erro de digitação na hora de entrar (espaços, acentos)
+        definir_mensagem('Login inválido: use de 3 a 50 caracteres, só letras sem acento, números, ponto, hífen ou underline. Ex.: fulano.tal', 'erro');
     } else {
         $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE login = ?');
         $stmt->execute([$login]);
@@ -46,7 +49,10 @@ require 'cabecalho.php';
 
             <div class="form-group">
                 <label for="login">Login de Acesso:</label>
-                <input type="text" id="login" name="login" placeholder="Ex: joao.silva" maxlength="50" required>
+                <input type="text" id="login" name="login" placeholder="Ex: joao.silva" maxlength="50" required
+                       pattern="[A-Za-z0-9._\-]{3,50}" autocapitalize="none"
+                       title="Sem espaços nem acentos: letras, números, ponto, hífen ou underline. Ex.: joao.silva">
+                <small style="color: var(--text-main); font-size: 0.8rem;">Sem espaços nem acentos. Ex.: joao.silva</small>
             </div>
 
             <div class="form-group">
