@@ -45,18 +45,10 @@ $historico = $pdo->query(
       ORDER BY mt.data_hora DESC
       LIMIT 10'
 )->fetchAll();
+
+$titulo = 'Manutenção de Frota';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manutenção de Frota - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-    <meta name="theme-color" content="#f59e0b">
-</head>
-<body>
     <div class="container dashboard-container">
         <div class="header-painel">
             <h2>Manutenção</h2>
@@ -140,6 +132,7 @@ $historico = $pdo->query(
         <div class="modal-content">
             <h3>Registrar Troca de Óleo</h3>
             <form method="post" action="tela_manutencao.php">
+                <?= campo_csrf() ?>
                 <input type="hidden" name="maquina_id" id="modal_maquina_id">
 
                 <div class="form-group">

@@ -9,8 +9,9 @@ $pasta_uploads = __DIR__ . '/uploads/';
 // --------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id      = (int) ($_POST['id'] ?? 0);
-    $placa   = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $_POST['placa'] ?? ''));
-    $renavam = preg_replace('/\D/', '', $_POST['renavam'] ?? '');
+    // substr: o maxlength do HTML pode ser burlado, então limita aqui também
+    $placa   = substr(strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $_POST['placa'] ?? '')), 0, 8);
+    $renavam = substr(preg_replace('/\D/', '', $_POST['renavam'] ?? ''), 0, 11);
 
     $stmt = $pdo->prepare('SELECT * FROM maquinas WHERE id = ?');
     $stmt->execute([$id]);
@@ -35,13 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             definir_mensagem('Formato inválido. Envie PDF, JPG ou PNG.', 'erro');
             redirecionar('documentos.php');
         }
+        // Confere o conteúdo real do arquivo, não só a extensão do nome
+        $tipo_real = (new finfo(FILEINFO_MIME_TYPE))->file($_FILES['arquivo']['tmp_name']);
+        if (!in_array($tipo_real, ['application/pdf', 'image/jpeg', 'image/png'])) {
+            definir_mensagem('O conteúdo do arquivo não é um PDF, JPG ou PNG válido.', 'erro');
+            redirecionar('documentos.php');
+        }
         if ($_FILES['arquivo']['size'] > 5 * 1024 * 1024) {
             definir_mensagem('Arquivo muito grande (máximo 5 MB).', 'erro');
             redirecionar('documentos.php');
         }
 
         if (!is_dir($pasta_uploads)) {
-            mkdir($pasta_uploads, 0777, true);
+            mkdir($pasta_uploads, 0755, true);
         }
 
         $novo_nome = 'crlv_' . $id . '_' . time() . '.' . $extensao;
@@ -65,17 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $frota = $pdo->query('SELECT * FROM maquinas ORDER BY nome')->fetchAll();
+
+$titulo = 'Documentos';
+require 'cabecalho.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentos - HP Terraplenagem</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
-</head>
-<body>
     <div class="container dashboard-container max-w-800">
         <div class="header-painel">
             <h2>Documentos</h2>
@@ -103,7 +103,7 @@ $frota = $pdo->query('SELECT * FROM maquinas ORDER BY nome')->fetchAll();
                             <td data-label="RENAVAM"><?= $v['renavam'] ? e($v['renavam']) : '<span style="color:#94a3b8;">Não informado</span>' ?></td>
                             <td data-label="CRLV">
                                 <?php if ($v['crlv_arquivo']): ?>
-                                    <a href="uploads/<?= e($v['crlv_arquivo']) ?>" target="_blank" class="btn-editar" style="background-color: #10b981; border-color: #10b981; color: #fff;">Abrir Arquivo</a>
+                                    <a href="arquivo.php?id=<?= $v['id'] ?>" target="_blank" class="btn-editar" style="background-color: #10b981; border-color: #10b981; color: #fff;">Abrir Arquivo</a>
                                 <?php else: ?>
                                     <span style="color:#ef4444; font-size: 12px; font-weight: bold;">Pendente</span>
                                 <?php endif; ?>
@@ -127,6 +127,7 @@ $frota = $pdo->query('SELECT * FROM maquinas ORDER BY nome')->fetchAll();
         <div class="modal-content">
             <h3>Atualizar Documentação</h3>
             <form method="post" action="documentos.php" enctype="multipart/form-data">
+                <?= campo_csrf() ?>
                 <input type="hidden" name="id" id="modal_doc_id">
 
                 <div class="form-group">

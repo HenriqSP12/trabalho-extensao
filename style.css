@@ -140,7 +140,7 @@ input:focus, select:focus, .input-select:focus {
 }
 
 /* BOTÕES - MODERNIZAÇÃO */
-button, .btn-login, .btn-salvar, .btn-excel, .btn-admin, .btn-filtrar, 
+button, .btn-login, .btn-salvar, .btn-fechamento, .btn-excel, .btn-admin, .btn-filtrar,
 .btn-sair, .link-voltar, .btn-editar, .btn-manutencao, .btn-ia {
   border-radius: var(--radius-sm);
   font-size: 0.95rem;
@@ -528,24 +528,20 @@ tr:hover td { background-color: #f1f5f9; }
 
 /* 2. Força os links da área admin a quebrarem linha */
 .admin-area a {
-  display: block;
+  display: flex;
   width: 100%;
   text-decoration: none;
+  margin-bottom: 15px;
 }
 
-/* 3. Descamufla os botões escuros e define 100% de largura */
-.admin-area button {
-  width: 100% !important;
-  margin-bottom: 15px !important;
-}
-
-.admin-area button.btn-excel {
+/* 3. Descamufla os botões escuros */
+.admin-area a.btn-excel {
   background-color: var(--dark-hover); /* Um azul um pouco mais claro que o fundo */
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: none;
 }
 
-.admin-area button.btn-excel:hover {
+.admin-area a.btn-excel:hover {
   background-color: #334155; /* Destaca ao passar o mouse */
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -586,3 +582,7 @@ tr:hover td { background-color: #f1f5f9; }
   .tabela-horas td { text-align: center !important; padding: 12px !important; }
   .tabela-horas td::before { display: none !important; }
 }
+/* Dashboard de horas: versão compacta (antes ficava no <head> do dashboard_horas.php) */
+.dashboard-compacto { max-width: 950px !important; }
+.card-compacto { padding: 1.5rem !important; min-width: 100% !important; }
+.card-compacto .value { font-size: 2rem !important; }
