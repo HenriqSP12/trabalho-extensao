@@ -2,6 +2,31 @@
 require 'config.php';
 exigir_admin();
 
+// --------------------------------------------------------------------------
+// Desativar / reativar usuário
+// Não apaga do banco: o histórico (apontamentos, gastos...) continua com o nome dele
+// --------------------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && in_array($_POST['acao'] ?? '', ['desativar', 'reativar'])) {
+    $id    = (int) ($_POST['id'] ?? 0);
+    $ativo = $_POST['acao'] === 'reativar' ? 1 : 0;
+
+    if ($id === ID_DONO) {
+        definir_mensagem('A conta principal do dono não pode ser desativada.', 'erro');
+    } elseif ($id === (int) $_SESSION['id_usuario']) {
+        definir_mensagem('Você não pode desativar a sua própria conta.', 'erro');
+    } else {
+        $stmt = $pdo->prepare('UPDATE usuarios SET ativo = ? WHERE id = ?');
+        $stmt->execute([$ativo, $id]);
+        if ($stmt->rowCount()) {
+            definir_mensagem($ativo ? 'Usuário reativado.' : 'Usuário desativado. Ele não consegue mais entrar no sistema.');
+        }
+    }
+    redirecionar('cadastro.php');
+}
+
+// --------------------------------------------------------------------------
+// Cadastrar novo usuário
+// --------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome  = trim($_POST['nome'] ?? '');
     $login = strtolower(trim($_POST['login'] ?? ''));
@@ -28,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirecionar('cadastro.php');
 }
 
-$usuarios = $pdo->query('SELECT nome, login, tipo, criado_em FROM usuarios ORDER BY nome')->fetchAll();
+// Ativos primeiro, depois os desativados
+$usuarios = $pdo->query('SELECT id, nome, login, tipo, ativo FROM usuarios ORDER BY ativo DESC, nome')->fetchAll();
 
 $titulo = 'Cadastrar Usuário';
 require 'cabecalho.php';
@@ -75,14 +101,39 @@ require 'cabecalho.php';
         <div class="table-responsive">
             <table>
                 <thead>
-                    <tr><th>Nome</th><th>Login</th><th>Nível</th></tr>
+                    <tr><th>Nome</th><th>Login</th><th>Nível</th><th>Situação</th><th>Ações</th></tr>
                 </thead>
                 <tbody>
                     <?php foreach ($usuarios as $u): ?>
-                        <tr>
+                        <tr<?= $u['ativo'] ? '' : ' style="opacity: 0.6;"' ?>>
                             <td data-label="Nome"><?= e($u['nome']) ?></td>
                             <td data-label="Login"><?= e($u['login']) ?></td>
                             <td data-label="Nível"><?= $u['tipo'] === 'admin' ? 'Administrador' : 'Operador' ?></td>
+                            <td data-label="Situação">
+                                <span class="badge <?= $u['ativo'] ? 'badge-ok' : 'badge-critico' ?>"><?= $u['ativo'] ? 'Ativo' : 'Desativado' ?></span>
+                            </td>
+                            <td>
+                                <?php if ($u['id'] == ID_DONO): ?>
+                                    <span style="color: #64748b; font-size: 0.8rem;">Conta principal</span>
+                                <?php elseif ($u['id'] == $_SESSION['id_usuario']): ?>
+                                    <span style="color: #64748b; font-size: 0.8rem;">Você</span>
+                                <?php elseif ($u['ativo']): ?>
+                                    <form method="post" action="cadastro.php" style="display: inline;"
+                                          onsubmit="return confirm('Desativar este usuário? Ele não vai conseguir mais entrar no sistema.');">
+                                        <?= campo_csrf() ?>
+                                        <input type="hidden" name="acao" value="desativar">
+                                        <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                        <button type="submit" class="btn-editar" style="width: auto; background: #fee2e2; color: #b91c1c;">Desativar</button>
+                                    </form>
+                                <?php else: ?>
+                                    <form method="post" action="cadastro.php" style="display: inline;">
+                                        <?= campo_csrf() ?>
+                                        <input type="hidden" name="acao" value="reativar">
+                                        <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                        <button type="submit" class="btn-editar" style="width: auto;">Reativar</button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

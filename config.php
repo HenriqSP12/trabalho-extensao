@@ -51,10 +51,26 @@ try {
 // Controle de acesso
 // --------------------------------------------------------------------------
 
-// Manda para o login quem não estiver logado
+// Conta principal do dono da empresa: nenhum administrador pode desativá-la
+const ID_DONO = 1;
+
+// Manda para o login quem não estiver logado ou tiver sido desativado
 function exigir_login(): void
 {
+    global $pdo;
+
     if (empty($_SESSION['id_usuario'])) {
+        header('Location: index.php');
+        exit;
+    }
+
+    // Confere a cada página se o usuário continua ativo: quem for desativado
+    // é deslogado na hora, mesmo que já estivesse com o sistema aberto
+    $stmt = $pdo->prepare('SELECT ativo FROM usuarios WHERE id = ?');
+    $stmt->execute([$_SESSION['id_usuario']]);
+    if (!$stmt->fetchColumn()) {
+        session_unset();
+        session_destroy();
         header('Location: index.php');
         exit;
     }

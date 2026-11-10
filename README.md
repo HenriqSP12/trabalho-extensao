@@ -16,7 +16,7 @@ Projeto de extensão: sistema web simples para uma empresa de terraplenagem, fei
 - **Manutenção:** situação do horímetro de cada máquina e registro da troca de óleo.
 - **Documentos:** placa, RENAVAM e upload do CRLV (PDF ou imagem).
 - **Fechamento Mensal:** soma as horas e os gastos reais do mês e guarda no histórico.
-- **Cadastro de Usuários:** cria novos operadores ou administradores.
+- **Usuários:** cadastra operadores ou administradores e desativa/reativa funcionários (o histórico é mantido; a conta principal `admin` não pode ser desativada).
 
 ## Como rodar no XAMPP
 

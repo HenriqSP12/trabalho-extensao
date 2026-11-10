@@ -17,15 +17,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute([$login]);
     $usuario = $stmt->fetch();
 
-    if ($usuario && password_verify($senha, $usuario['senha'])) {
+    if ($usuario && password_verify($senha, $usuario['senha']) && !$usuario['ativo']) {
+        $erro = 'Este usuário está desativado. Fale com o administrador.';
+    } elseif ($usuario && password_verify($senha, $usuario['senha'])) {
         session_regenerate_id(true);
         $_SESSION['id_usuario']   = $usuario['id'];
         $_SESSION['nome_usuario'] = $usuario['nome'];
         $_SESSION['tipo_usuario'] = $usuario['tipo'];
         redirecionar('painel.php');
+    } else {
+        $erro = 'Login ou senha incorretos.';
     }
-
-    $erro = 'Login ou senha incorretos.';
 }
 
 $titulo = 'Login';

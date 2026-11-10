@@ -4,7 +4,7 @@
 -- Ele cria o banco "hp_terraplenagem" do zero, com dados de exemplo.
 --
 -- Usuários de teste:
---   admin    / admin     (Administrador)
+--   admin    / admin     (Administrador - conta principal do dono, id 1, não pode ser desativada)
 --   operador / operador  (Operador)
 -- ==========================================================================
 
@@ -21,6 +21,7 @@ CREATE TABLE usuarios (
     login     VARCHAR(50)  NOT NULL UNIQUE,
     senha     VARCHAR(255) NOT NULL,
     tipo      ENUM('admin', 'operador') NOT NULL DEFAULT 'operador',
+    ativo     TINYINT(1) NOT NULL DEFAULT 1,  -- 0 = desativado: não entra mais, mas o histórico continua
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
