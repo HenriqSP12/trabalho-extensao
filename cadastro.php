@@ -56,16 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Ativos primeiro, depois os desativados
 $usuarios = $pdo->query('SELECT id, nome, login, tipo, ativo FROM usuarios ORDER BY ativo DESC, nome')->fetchAll();
 
-$titulo = 'Cadastrar Usuário';
+$titulo = 'Usuários';
 require 'cabecalho.php';
 ?>
-    <div class="container form-card">
-        <a href="painel.php" class="link-voltar">&larr; Voltar ao Painel</a>
-
-        <h2>Novo Usuário</h2>
+    <div class="container dashboard-container">
+        <div class="header-painel">
+            <h2 style="margin: 0;">Usuários</h2>
+            <a href="painel.php" class="btn-sair">Voltar ao Painel</a>
+        </div>
 
         <?php mostrar_mensagem(); ?>
 
+        <!-- Formulário à esquerda e lista à direita (no celular, um embaixo do outro) -->
+        <div class="layout-duas-colunas">
+
+        <section class="bloco">
+        <h3>Novo Usuário</h3>
         <form method="post" action="cadastro.php" autocomplete="off">
             <?= campo_csrf() ?>
             <div class="form-group">
@@ -78,7 +84,7 @@ require 'cabecalho.php';
                 <input type="text" id="login" name="login" placeholder="Ex: joao.silva" maxlength="50" required
                        pattern="[A-Za-z0-9._\-]{3,50}" autocapitalize="none"
                        title="Sem espaços nem acentos: letras, números, ponto, hífen ou underline. Ex.: joao.silva">
-                <small style="color: var(--text-main); font-size: 0.8rem;">Sem espaços nem acentos. Ex.: joao.silva</small>
+                <small class="dica-campo">Sem espaços nem acentos. Ex.: joao.silva</small>
             </div>
 
             <div class="form-group">
@@ -96,8 +102,10 @@ require 'cabecalho.php';
 
             <button type="submit" class="btn-salvar">Cadastrar Usuário</button>
         </form>
+        </section>
 
-        <h3 style="margin-top: 30px;">Usuários cadastrados</h3>
+        <section class="bloco">
+        <h3>Usuários cadastrados</h3>
         <div class="table-responsive">
             <table>
                 <thead>
@@ -138,6 +146,9 @@ require 'cabecalho.php';
                     <?php endforeach; ?>
                 </tbody>
             </table>
+        </div>
+        </section>
+
         </div>
     </div>
 </body>

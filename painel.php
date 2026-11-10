@@ -76,7 +76,8 @@ $titulo = 'Painel';
 require 'cabecalho.php';
 ?>
 
-    <div class="container">
+    <!-- Admin usa a tela larga; o operador continua com a coluna estreita (pensada para celular) -->
+    <div class="container<?= $eh_admin ? ' dashboard-container painel-admin' : '' ?>">
 
         <div class="header-painel">
             <h3 style="margin: 0; text-align: left; font-size: 1.1rem; color: var(--text-dark);">Olá, <?= e($primeiro_nome) ?>!</h3>
@@ -95,20 +96,20 @@ require 'cabecalho.php';
                     <h3 style="margin: 0; color: var(--text-dark); text-align: left; font-size: 1.1rem;">Controle de Manutenção</h3>
                     <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--text-main);">Acompanhamento de horímetro e troca de óleo.</p>
                 </div>
-                <a href="tela_manutencao.php" class="btn-manutencao" style="width: auto;">Acessar Manutenção</a>
+                <a href="tela_manutencao.php" class="btn-manutencao">Acessar Manutenção</a>
             </div>
 
             <?php if ($alertas): ?>
                 <div style="margin-top: 20px; background: var(--primary-light); border-left: 4px solid var(--primary); padding: 15px; border-radius: var(--radius-sm);">
                     <strong style="color: #b45309; font-size: 0.9rem;">Atenção! Máquinas necessitando de revisão:</strong>
-                    <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #92400e; font-size: 0.9rem;">
+                    <ul class="lista-alertas">
                         <?php foreach ($alertas as $a): ?>
-                            <li>
-                                <strong><?= e($a['nome']) ?></strong> -
+                            <li class="<?= $a['restantes'] <= 0 ? 'vencida' : '' ?>">
+                                <strong><?= e($a['nome']) ?></strong>
                                 <?php if ($a['restantes'] <= 0): ?>
-                                    <span style="color:#ef4444;">Vencida há <?= numero(abs($a['restantes'])) ?>h!</span>
+                                    Vencida há <?= numero(abs($a['restantes'])) ?>h!
                                 <?php else: ?>
-                                    Restam apenas <?= numero($a['restantes']) ?>h
+                                    Restam <?= numero($a['restantes']) ?>h
                                 <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
@@ -121,16 +122,34 @@ require 'cabecalho.php';
             <?php endif; ?>
         </div>
 
+        <!-- Atalhos em grade: 3 colunas no computador, 2 no tablet, 1 no celular -->
         <div class="admin-area">
-            <a href="dashboard_horas.php" class="btn-excel">Gerenciamento de Horas</a>
-            <a href="controle_gastos.php" class="btn-excel">Controle de Gastos</a>
-            <a href="relatorios.php" class="btn-excel">Planilha de Relatórios</a>
-            <a href="documentos.php" class="btn-excel">Documentos de Veículos</a>
-
-            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
-
-            <a href="fechamento.php" class="btn-fechamento">Fechamento Mensal</a>
-            <a href="cadastro.php" class="btn-login" style="margin-top: 10px;">Cadastrar Novo Usuário</a>
+            <div class="atalhos-grid">
+                <a href="dashboard_horas.php" class="atalho">
+                    <strong>Gerenciamento de Horas</strong>
+                    <span>Horas apontadas por mês, máquina e operador</span>
+                </a>
+                <a href="controle_gastos.php" class="atalho">
+                    <strong>Controle de Gastos</strong>
+                    <span>Combustível e manutenção, com totais do mês</span>
+                </a>
+                <a href="relatorios.php" class="atalho">
+                    <strong>Planilha de Relatórios</strong>
+                    <span>Busca por período e exportação para CSV</span>
+                </a>
+                <a href="documentos.php" class="atalho">
+                    <strong>Documentos de Veículos</strong>
+                    <span>Placa, RENAVAM e CRLV</span>
+                </a>
+                <a href="fechamento.php" class="atalho atalho-destaque">
+                    <strong>Fechamento Mensal</strong>
+                    <span>Consolida horas e gastos do mês</span>
+                </a>
+                <a href="cadastro.php" class="atalho atalho-destaque">
+                    <strong>Usuários</strong>
+                    <span>Cadastrar, desativar e reativar funcionários</span>
+                </a>
+            </div>
         </div>
 
 <?php else: ?>

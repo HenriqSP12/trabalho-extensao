@@ -526,29 +526,80 @@ tr:hover td { background-color: #f1f5f9; }
   border: 1px solid var(--border);
 }
 
-/* 2. Força os links da área admin a quebrarem linha */
-.admin-area a {
+/* 2. Alertas de manutenção em "etiquetas" lado a lado */
+.lista-alertas {
+  list-style: none;
   display: flex;
-  width: 100%;
-  text-decoration: none;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
+.lista-alertas li {
+  background: #fff;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+.lista-alertas li.vencida { border-color: #fca5a5; color: #b91c1c; }
 
-/* 3. Descamufla os botões escuros */
-.admin-area a.btn-excel {
-  background-color: var(--dark-hover); /* Um azul um pouco mais claro que o fundo */
+/* 3. Painel do admin: tela larga e atalhos em grade */
+.painel-admin { max-width: 1000px !important; }
+
+.atalhos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+.atalho {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  background-color: var(--dark-hover);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: none;
+  color: #fff;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-.admin-area a.btn-excel:hover {
-  background-color: #334155; /* Destaca ao passar o mouse */
+.atalho strong { font-size: 1rem; }
+.atalho span { font-size: 0.8rem; color: #94a3b8; line-height: 1.4; }
+.atalho:hover {
+  background-color: #334155;
   border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
+.atalho-destaque { border-left: 4px solid var(--primary); }
 
-.btn-manutencao {
-  width: 100% !important;
+@media (max-width: 900px) { .atalhos-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .atalhos-grid { grid-template-columns: 1fr; } }
+
+/* 4. Duas colunas (formulário à esquerda, lista à direita) - usado no cadastro de usuários */
+.layout-duas-colunas {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  gap: 30px;
+  align-items: start;
 }
+.bloco {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 25px;
+  box-shadow: var(--shadow-sm);
+  min-width: 0; /* deixa a tabela rolar dentro do bloco em vez de esticar a grade */
+}
+.bloco h3 { text-align: left; font-size: 1.1rem; margin-bottom: 20px; }
+.bloco th, .bloco td { padding: 12px 14px; } /* tabela mais compacta para caber ao lado do formulário */
+.dica-campo { display: block; margin: -18px 0 20px; font-size: 0.8rem; color: var(--text-main); }
+
+@media (max-width: 900px) { .layout-duas-colunas { grid-template-columns: 1fr; } }
+
+/* Botão do cartão de manutenção: largura do texto no computador, largura toda no celular */
+.btn-manutencao { white-space: nowrap; }
+@media (max-width: 560px) { .btn-manutencao { width: 100%; } }
 
 /* RESPONSIVIDADE ESTRUTURADA */
 @media (max-width: 768px) {
